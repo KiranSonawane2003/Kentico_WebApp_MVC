@@ -1,0 +1,57 @@
+﻿@model DancingGoat.Models.Checkout.CartViewModel
+
+@{
+    ViewBag.Title = ResHelper.GetString("DancingGoatMvc.ShoppingCart");
+}
+
+<div class="checkout-container">
+    <div class="cart">
+        <div class="continue-shopping-link">
+            <a href="@Url.Action("Index", "Coffees")">&larr; @ResHelper.GetString("DancingGoatMvc.Checkout.ContinueShopping")</a>
+        </div>
+
+        @Html.ValidationMessage("shipping", new { @class = "red" })
+
+        <h2>@ResHelper.GetString("DancingGoatMvc.Checkout.YourShoppingCart")</h2>
+        <div class="col-md-8 cart-content">
+            <hr class="first-separator" />
+            @if (Model.Cart.IsEmpty)
+            {
+                <span>@ResHelper.GetString("DancingGoatMvc.Checkout.ShoppingCartIsEmpty")</span>
+                <hr class="last-separator" />
+            }
+            else
+            {
+                @Html.Partial("_ShoppingCartContentEdit", Model)
+            }
+
+            @if (Model.RemainingAmountForFreeShipping > 0)
+            {
+                <section class="free-shipping-promotion">
+                    <div>
+                        <span>
+                            @ResHelper.GetStringFormat("DancingGoatMvc.ShoppingCart.FreeDelivery", Model.Cart.Currency.FormatPrice(Model.RemainingAmountForFreeShipping))
+                        </span>
+                    </div>
+                </section>
+            }
+        </div>
+        <div class="col-md-4">
+            <div class="cart-right-panel floating-box">
+                
+                @Html.Partial("_ShoppingCartCouponCodeEdit", Model)
+                
+                <hr>
+
+                @using (Html.BeginForm("ShoppingCart", "Checkout", FormMethod.Post))
+                {
+                    @Html.Partial("_ShoppingCartTotals", Model.Cart)
+
+                    <p>@ResHelper.GetString("DancingGoatMvc.Checkout.ReviewAndCheckout")</p>
+
+                    <input type="submit" name="ShoppingCartCheckout" value="@ResHelper.GetString("DancingGoatMvc.Checkout")" class="btn-primary checkout-button btn btn-default" />
+                }
+            </div>
+        </div>
+    </div>
+</div>

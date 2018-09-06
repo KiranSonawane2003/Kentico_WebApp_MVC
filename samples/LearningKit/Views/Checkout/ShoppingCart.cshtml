@@ -1,0 +1,86 @@
+﻿@model LearningKit.Models.Checkout.ShoppingCartViewModel
+@using Kentico.Ecommerce
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Shopping cart";
+
+    Currency currency = Model.Cart.Currency;
+}
+
+<h2>Shopping cart</h2>
+
+@*DocSection:CartContent*@
+@if (Model.Cart.IsEmpty)
+{
+    <span>Your shopping cart is empty.</span>
+}
+else
+{
+    <ul>
+        @* Loops through all shopping cart items *@
+        @foreach (Kentico.Ecommerce.ShoppingCartItem cartItem in Model.Items)
+        {
+            @* Displays the shopping cart items' properties *@
+            <li>
+                @cartItem.Units&times; @cartItem.Name ... @currency.FormatPrice(cartItem.Subtotal)
+
+                @using (Html.BeginForm("RemoveItem", "Checkout", FormMethod.Post))
+                {
+                    @Html.Hidden("ItemId", cartItem.ID)
+                    <input type="submit" value="Remove" />
+                }
+            </li>
+        }
+    </ul>
+}
+@*EndDocSection:CartContent*@
+
+@if (Model.RemainingAmountForFreeShipping > 0)
+{
+    <p>Spend @currency.FormatPrice(Model.RemainingAmountForFreeShipping) more to get free shipping.</p>
+}
+
+
+<h2>Coupon codes</h2>
+
+@*DocSection:CouponCode*@
+@* Coupon code text box and apply button *@
+@using (Html.BeginForm("AddCouponCode", "Checkout", FormMethod.Post))
+{
+    <input type="text" name="CouponCode" />
+    <input type="submit" value="Apply" />
+    @Html.ValidationMessage("CouponCodeError")
+}
+@* List of applied coupon codes with remove buttons *@
+<ul>
+    @* Loops through all applied coupon codes *@
+    @foreach (string couponCode in Model.Cart.AppliedCouponCodes)
+    {
+        <li>
+            @couponCode
+            
+            @using (Html.BeginForm("RemoveCouponCode", "Checkout", FormMethod.Post))
+            {
+                <input type="hidden" name="CouponCode" value="@couponCode" />
+                <input type="submit" value="Remove" />
+            }
+        </li>
+    }
+</ul>
+@*EndDocSection:CouponCode*@
+
+<h2>Total price: @currency.FormatPrice(Model.Cart.GrandTotal)</h2>
+
+<p>
+    @*DocSection:Button*@
+    @* The continue button *@
+    @Html.ActionLink("Continue to the customer details step", "DeliveryDetails")
+    @*EndDocSection:Button*@
+    <br />
+    @Html.ActionLink("Continue to the customer details step with pre-filling addresses", "DeliveryDetailsAddressSelector")
+</p>
+
+<p>
+    @Html.ActionLink("> Back to the home index", "Index", "Home")
+</p>

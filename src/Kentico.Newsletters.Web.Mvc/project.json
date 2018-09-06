@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "Kentico.Libraries": "11.0.0",
+    "Microsoft.AspNet.Mvc": "5.2.3"
+  },
+  "frameworks": {
+    "net46": { }
+  },
+  "runtimes": {
+    "win": { }
+  }
+}
